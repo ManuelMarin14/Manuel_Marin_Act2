@@ -1,0 +1,96 @@
+create database UNI
+use UNI
+CREATE TABLE CentrosTrabajo (
+    NumeroCentro VARCHAR(6) PRIMARY KEY,
+    Nombre VARCHAR(100),
+    Ciudad VARCHAR(50)
+);
+
+CREATE TABLE Puestos (
+    ClavePuesto INT PRIMARY KEY,
+    Descripcion VARCHAR(100)
+);
+
+CREATE TABLE Empleados (
+    NúmeroEmpleado INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre VARCHAR(50),
+    ApellidoPaterno VARCHAR(50),
+    ApellidoMaterno VARCHAR(50),
+    FechaNacimiento DATE,
+    RFC VARCHAR(13),
+    CentroTrabajo VARCHAR(6) FOREIGN KEY REFERENCES CentrosTrabajo(NumeroCentro),
+    Puesto INT FOREIGN KEY REFERENCES Puestos(ClavePuesto),
+    Directivo BIT DEFAULT 0
+);
+
+CREATE TABLE Directivos (
+    NúmeroEmpleado INT PRIMARY KEY FOREIGN KEY REFERENCES Empleados(NúmeroEmpleado),
+    CentroSupervisa INT,
+    PrestacionCombustible BIT
+);
+
+INSERT INTO CentrosTrabajo (NumeroCentro, Nombre, Ciudad) VALUES
+('000201', 'Tiendas Ángel Flores Ropa', 'Culiacán'),
+('000202', 'Tiendas Ángel Flores Muebles', 'Culiacán'),
+('000203', 'Tiendas Ángel Flores Cajas', 'Culiacán'),
+('049001', 'La Primavera Ropa', 'Culiacán'),
+('049002', 'La Primavera Muebles', 'Mazatlán'),
+('049003', 'La Primavera Cajas', 'Los Mochis');
+
+INSERT INTO Puestos (ClavePuesto, Descripcion) VALUES
+(1, 'Vendedor'),
+(2, 'Cajero'),
+(3, 'Gerente de Tienda'),
+(4, 'Supervisor'),
+(5, 'Recursos Humanos'),
+(6, 'Almacenista'),
+(7, 'Director Regional');
+
+
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Alejandro', 'Mendoza', 'Ríos', '1990-04-12', 'MERI900412XXX', 0, '000201', 1);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Valeria', 'Castro', 'Luna', '1985-11-25', 'CALU851125XXX', 1, '049002', 3);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Ricardo', 'Ortega', 'Soto', '1993-07-08', 'OESR930708XXX', 0, '000203', 2);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Gabriela', 'Delgado', 'Fuentes', '1988-03-30', 'DEFG880330XXX', 0, '049001', 4);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Diego', 'Navarro', 'Meza', '1976-09-15', 'NAMD760915XXX', 1, '049003', 7);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Camila', 'Vega', 'Paredes', '1995-12-05', 'VEPC951205XXX', 0, '000202', 6);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Oscar', 'Reyes', 'Gil', '1982-01-20', 'REGO820120XXX', 0, '049003', 5);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Adriana', 'Guerrero', 'Miranda', '1991-06-18', 'GUMA910618XXX', 0, '000201', 1);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Javier', 'Soria', 'Ramos', '1980-10-22', 'SORJ801022XXX', 1, '000203', 3);
+INSERT INTO Empleados (Nombre, ApellidoPaterno, ApellidoMaterno, FechaNacimiento, RFC, Directivo, CentroTrabajo, Puesto) 
+VALUES ('Isabel', 'Medina', 'Cortés', '1994-02-28', 'MECI940228XXX', 0, '049002', 2);
+
+
+INSERT INTO Directivos (NúmeroEmpleado, CentroSupervisa, PrestacionCombustible) VALUES
+(3, 000202, 1),  -- Carlos supervisa el centro 000202 y tiene prestación de combustible
+(6, 049003, 1),  -- Lucía supervisa el centro 049003
+(9, 000203, 0);  -- Jorge supervisa el centro 000203, sin prestación de combustible
+
+-- Mostrar todos los empleados con sus puestos y centros
+SELECT e.NúmeroEmpleado, e.Nombre + ' ' + e.ApellidoPaterno AS NombreCompleto, 
+       p.Descripcion AS Puesto, c.NumeroCentro
+FROM Empleados e
+JOIN Puestos p ON e.Puesto = p.ClavePuesto
+JOIN CentrosTrabajo c ON e.CentroTrabajo = c.NumeroCentro;
+
+-- Empleados que son directivos
+SELECT e.Nombre, d.CentroSupervisa, c.NumeroCentro
+FROM Directivos d
+JOIN Empleados e ON d.NúmeroEmpleado = e.NúmeroEmpleado
+JOIN CentrosTrabajo c ON d.CentroSupervisa = c.NumeroCentro;
+
+-- Ver todos los empleados con detalles
+SELECT e.NúmeroEmpleado, e.Nombre + ' ' + e.ApellidoPaterno AS NombreCompleto, 
+       p.Descripcion AS Puesto, c.NumeroCentro,
+       CASE WHEN e.Directivo = 1 THEN 'Sí' ELSE 'No' END AS EsDirectivo
+FROM Empleados e
+JOIN Puestos p ON e.Puesto = p.ClavePuesto
+JOIN CentrosTrabajo c ON e.CentroTrabajo = c.NumeroCentro;
