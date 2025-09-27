@@ -1,0 +1,174 @@
+USE AkirasBoutiques;
+GO
+
+-- =============================================
+-- CONSULTAS SOLICITADAS - ACTIVIDAD 2
+-- =============================================
+
+-- 1. CLIENTES DEL AÑO 2021 (BASADO EN FECHA DE FACTURA)
+SELECT DISTINCT c.id_cliente, CAST(c.nombre AS VARCHAR(100)) as nombre, 
+                CAST(c.apellido AS VARCHAR(100)) as apellido, f.fecha
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+WHERE YEAR(f.fecha) = 2021;
+GO
+
+-- 2. CLIENTES DE 2022 (HASTA EL MOMENTO)
+SELECT DISTINCT c.id_cliente, CAST(c.nombre AS VARCHAR(100)) as nombre, 
+                CAST(c.apellido AS VARCHAR(100)) as apellido, f.fecha
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+WHERE YEAR(f.fecha) = 2022;
+GO
+
+-- 3. CLIENTES DE DICIEMBRE DE 2021
+SELECT DISTINCT c.id_cliente, CAST(c.nombre AS VARCHAR(100)) as nombre, 
+                CAST(c.apellido AS VARCHAR(100)) as apellido, f.fecha
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+WHERE YEAR(f.fecha) = 2021 AND MONTH(f.fecha) = 12;
+GO
+
+-- 4. COMPRAS DE CLIENTES ESPECÍFICOS
+-- 4.1 Valentina Anastasia Huerta Corral
+SELECT CAST(c.nombre AS VARCHAR(100)) as nombre, CAST(c.apellido AS VARCHAR(100)) as apellido, 
+       f.fecha, CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad, d.precio
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+WHERE CAST(c.nombre AS VARCHAR(100)) = 'Valentina Anastasia' 
+  AND CAST(c.apellido AS VARCHAR(100)) = 'Huerta Corral';
+GO
+
+-- 4.2 Zayra Manuela Gómez López
+SELECT CAST(c.nombre AS VARCHAR(100)) as nombre, CAST(c.apellido AS VARCHAR(100)) as apellido, 
+       f.fecha, CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad, d.precio
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+WHERE CAST(c.nombre AS VARCHAR(100)) = 'Zayra Manuela' 
+  AND CAST(c.apellido AS VARCHAR(100)) = 'Gómez López';
+GO
+
+-- 4.3 Dante Eduardo Dolores Meza
+SELECT CAST(c.nombre AS VARCHAR(100)) as nombre, CAST(c.apellido AS VARCHAR(100)) as apellido, 
+       f.fecha, CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad, d.precio
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+WHERE CAST(c.nombre AS VARCHAR(100)) = 'Dante Eduardo' 
+  AND CAST(c.apellido AS VARCHAR(100)) = 'Dolores Meza';
+GO
+
+-- 4.4 Ana Maribel Cedillo Núñez
+SELECT CAST(c.nombre AS VARCHAR(100)) as nombre, CAST(c.apellido AS VARCHAR(100)) as apellido, 
+       f.fecha, CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad, d.precio
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+WHERE CAST(c.nombre AS VARCHAR(100)) = 'Ana Maribel' 
+  AND CAST(c.apellido AS VARCHAR(100)) = 'Cedillo Núñez';
+GO
+
+-- 4.5 Rodrigo Ismael Silva Ugarte
+SELECT CAST(c.nombre AS VARCHAR(100)) as nombre, CAST(c.apellido AS VARCHAR(100)) as apellido, 
+       f.fecha, CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad, d.precio
+FROM cliente c
+INNER JOIN factura f ON c.id_cliente = f.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+WHERE CAST(c.nombre AS VARCHAR(100)) = 'Rodrigo Ismael' 
+  AND CAST(c.apellido AS VARCHAR(100)) = 'Silva Ugarte';
+GO
+
+-- 5. PRODUCTO CON MÁS VENTAS
+SELECT TOP 1 CAST(p.nombre AS VARCHAR(100)) as producto, SUM(d.cantidad) as total_vendido
+FROM producto p
+INNER JOIN detalle d ON p.id_producto = d.id_producto
+GROUP BY CAST(p.nombre AS VARCHAR(100))
+ORDER BY total_vendido DESC;
+GO
+
+-- 6. PRODUCTO CON MÁS STOCK
+SELECT TOP 1 CAST(nombre AS VARCHAR(100)) as producto, stock
+FROM producto
+ORDER BY stock DESC;
+GO
+
+-- 7. COMPRAS ORDENADAS POR FECHA (MÁS ANTIGUA A MÁS RECIENTE)
+SELECT f.id_factura, CAST(c.nombre AS VARCHAR(100)) as nombre, 
+       CAST(c.apellido AS VARCHAR(100)) as apellido, f.fecha, 
+       CAST(p.nombre AS VARCHAR(100)) as producto, d.cantidad
+FROM factura f
+INNER JOIN cliente c ON f.id_cliente = c.id_cliente
+INNER JOIN detalle d ON f.id_detalle = d.id_detalle
+INNER JOIN producto p ON d.id_producto = p.id_producto
+ORDER BY f.fecha ASC;
+GO
+
+-- 8. CLIENTES ORDENADOS ALFABÉTICAMENTE
+SELECT id_cliente, CAST(nombre AS VARCHAR(100)) as nombre, CAST(apellido AS VARCHAR(100)) as apellido
+FROM cliente
+ORDER BY CAST(nombre AS VARCHAR(100)), CAST(apellido AS VARCHAR(100));
+GO
+
+-- 9. PRODUCTOS POR CATEGORÍA ESPECÍFICA
+-- 9.1 Falda
+SELECT CAST(p.nombre AS VARCHAR(100)) as producto, p.precio, p.stock
+FROM producto p
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE CAST(cat.nombre AS VARCHAR(100)) = 'Falda';
+GO
+
+-- 9.2 Pantalón
+SELECT CAST(p.nombre AS VARCHAR(100)) as producto, p.precio, p.stock
+FROM producto p
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE CAST(cat.nombre AS VARCHAR(100)) = 'Pantalón';
+GO
+
+-- 9.3 Chamarra
+SELECT CAST(p.nombre AS VARCHAR(100)) as producto, p.precio, p.stock
+FROM producto p
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE CAST(cat.nombre AS VARCHAR(100)) = 'Chamarra';
+GO
+
+-- 9.4 Zapato
+SELECT CAST(p.nombre AS VARCHAR(100)) as producto, p.precio, p.stock
+FROM producto p
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE CAST(cat.nombre AS VARCHAR(100)) = 'Zapato';
+GO
+
+-- 9.5 Accesorios
+SELECT CAST(p.nombre AS VARCHAR(100)) as producto, p.precio, p.stock
+FROM producto p
+INNER JOIN categoria cat ON p.id_categoria = cat.id_categoria
+WHERE CAST(cat.nombre AS VARCHAR(100)) = 'Accesorios';
+GO
+
+-- 10. ENCARGADOS DE LAS SUCURSALES (TABLAS NUEVAS)
+SELECT ID_Sucursal, NombreSucursal, Encargado
+FROM Sucursales;
+GO
+
+-- 11. EMPLEADOS DE SUCURSAL CONSTITUCIÓN (TABLAS NUEVAS)
+SELECT e.Nombre, e.Telefono, e.Email
+FROM Empleados e
+INNER JOIN Sucursales s ON e.Sucursal_ID = s.ID_Sucursal
+WHERE s.NombreSucursal LIKE '%Constitución%';
+GO
+
+-- 12. CLIENTES MAYORES DE 30 AÑOS
+SELECT CAST(nombre AS VARCHAR(100)) as nombre, CAST(apellido AS VARCHAR(100)) as apellido, 
+       fec_nac, DATEDIFF(YEAR, fec_nac, GETDATE()) as edad
+FROM cliente
+WHERE DATEDIFF(YEAR, fec_nac, GETDATE()) > 30
+ORDER BY edad DESC;
+GO
+
