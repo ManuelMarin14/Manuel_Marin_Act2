@@ -1,0 +1,29 @@
+// See https://aka.ms/new-console-template for more information
+using System;
+
+namespace Actividad1_Consola
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Console.WriteLine("Bienvenidos a UMI/Universidad Coppel");
+            Console.WriteLine("Por favor, ingrese los siguientes datos para crear su expediente:\n");
+            Console.Write("Nombre completo: ");
+            string nombre = Console.ReadLine();
+
+            Console.Write("Edad: ");
+            string edad = Console.ReadLine();
+
+            Console.Write("Fecha de Nacimiento (dd/mm/aaaa): ");
+            string fechaNacimiento = Console.ReadLine();
+
+            Console.Write("Carrera a la que desea ingresar: ");
+            string carrera = Console.ReadLine();
+
+            Console.WriteLine($"\nGracias {nombre} por formar parte de UMI/Universidad Coppel, Bienvenido a la carrera {carrera}.");
+
+            Console.ReadKey(); // Para que no se cierre la consola inmediatamente
+        }
+    }
+}
