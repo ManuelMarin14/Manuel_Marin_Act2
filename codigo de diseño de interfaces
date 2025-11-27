@@ -1,0 +1,228 @@
+using System;
+using System.Windows.Forms;
+
+namespace ProyectoKamil
+{
+    public partial class frmMenuPrincipal : Form
+    {
+        public frmMenuPrincipal()
+        {
+            InitializeComponent();
+        }
+
+        private void btnAltas_Click(object sender, EventArgs e)
+        {
+            frmAltas formularioAltas = new frmAltas();
+            formularioAltas.Show();
+            this.Hide();
+        }
+
+        private void btnConsultas_Click(object sender, EventArgs e)
+        {
+            frmConsultas formularioConsultas = new frmConsultas();
+            formularioConsultas.Show();
+            this.Hide();
+        }
+
+        private void btnSalir_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
+        }
+    }
+}
+using System;
+using System.Windows.Forms;
+
+namespace ProyectoKamil
+{
+    public partial class frmAltas : Form
+    {
+        public frmAltas()
+        {
+            InitializeComponent();
+            CargarCombos();
+        }
+
+        private void CargarCombos()
+        {
+            // Centros de trabajo predefinidos
+            cmbCentroTrabajo.Items.Add("000201 - Tiendas Ángel Flores Ropa");
+            cmbCentroTrabajo.Items.Add("000202 - Tiendas Ángel Flores Muebles");
+            cmbCentroTrabajo.Items.Add("000203 - Tiendas Ángel Flores Cajas");
+            cmbCentroTrabajo.Items.Add("049001 - La Primavera Ropa");
+            cmbCentroTrabajo.Items.Add("049002 - La Primavera Muebles");
+            cmbCentroTrabajo.Items.Add("049003 - La Primavera Cajas");
+
+            // Puestos
+            cmbPuesto.Items.Add("Vendedor");
+            cmbPuesto.Items.Add("Gerente");
+            cmbPuesto.Items.Add("Supervisor");
+            cmbPuesto.Items.Add("Auxiliar Administrativo");
+        }
+
+        private void chkEsDirectivo_CheckedChanged(object sender, EventArgs e)
+        {
+            gbDirectivo.Visible = chkEsDirectivo.Checked;
+        }
+
+        private void btnGuardar_Click(object sender, EventArgs e)
+        {
+            if (ValidarDatos())
+            {
+                GuardarEmpleado();
+                MessageBox.Show("Empleado guardado correctamente", "Éxito", 
+                              MessageBoxButtons.OK, MessageBoxIcon.Information);
+                LimpiarFormulario();
+            }
+        }
+
+        private bool ValidarDatos()
+        {
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtApellidoPaterno.Text) ||
+                dtpFechaNacimiento.Value == null)
+            {
+                MessageBox.Show("Por favor complete todos los campos obligatorios", "Error", 
+                              MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+            return true;
+        }
+
+        private void GuardarEmpleado()
+        {
+            // Aquí iría el código para guardar en base de datos
+            // Por ahora solo mostramos en consola
+            Console.WriteLine($"Empleado guardado: {txtNombre.Text} {txtApellidoPaterno.Text}");
+        }
+
+        private void LimpiarFormulario()
+        {
+            txtNombre.Clear();
+            txtApellidoPaterno.Clear();
+            txtApellidoMaterno.Clear();
+            dtpFechaNacimiento.Value = DateTime.Now;
+            txtRFC.Clear();
+            cmbCentroTrabajo.SelectedIndex = -1;
+            cmbPuesto.SelectedIndex = -1;
+            chkEsDirectivo.Checked = false;
+            gbDirectivo.Visible = false;
+        }
+
+        private void btnRegresar_Click(object sender, EventArgs e)
+        {
+            frmMenuPrincipal menu = new frmMenuPrincipal();
+            menu.Show();
+            this.Hide();
+        }
+    }
+}
+using System;
+using System.Data;
+using System.Windows.Forms;
+
+namespace ProyectoKamil
+{
+    public partial class frmConsultas : Form
+    {
+        private DataTable tablaEmpleados;
+
+        public frmConsultas()
+        {
+            InitializeComponent();
+            InicializarTabla();
+            CargarDatosEjemplo();
+        }
+
+        private void InicializarTabla()
+        {
+            tablaEmpleados = new DataTable();
+            tablaEmpleados.Columns.Add("Numero", typeof(int));
+            tablaEmpleados.Columns.Add("Nombre", typeof(string));
+            tablaEmpleados.Columns.Add("Apellidos", typeof(string));
+            tablaEmpleados.Columns.Add("FechaNacimiento", typeof(string));
+            tablaEmpleados.Columns.Add("RFC", typeof(string));
+            tablaEmpleados.Columns.Add("Centro", typeof(string));
+            tablaEmpleados.Columns.Add("Puesto", typeof(string));
+            tablaEmpleados.Columns.Add("Directivo", typeof(string));
+
+            dgvEmpleados.DataSource = tablaEmpleados;
+        }
+
+        private void CargarDatosEjemplo()
+        {
+            // Datos de ejemplo
+            tablaEmpleados.Rows.Add(1, "Jesús", "Vega Castro", "26/03/1988", 
+                                  "VECJ880326XXX", "Tiendas Ángel Flores Ropa", "Vendedor", "No");
+            
+            tablaEmpleados.Rows.Add(2, "José", "López Perez", "01/01/1980", 
+                                  "LOPJ800101XXX", "La Primavera Cajas", "Gerente", "Sí");
+        }
+
+        private void btnBuscar_Click(object sender, EventArgs e)
+        {
+            string filtro = txtBuscar.Text.ToLower();
+            
+            if (string.IsNullOrWhiteSpace(filtro))
+            {
+                tablaEmpleados.DefaultView.RowFilter = "";
+            }
+            else
+            {
+                tablaEmpleados.DefaultView.RowFilter = 
+                    $"Nombre LIKE '%{filtro}%' OR Apellidos LIKE '%{filtro}%' OR Centro LIKE '%{filtro}%'";
+            }
+        }
+
+        private void btnModificar_Click(object sender, EventArgs e)
+        {
+            if (dgvEmpleados.CurrentRow != null)
+            {
+                int numeroEmpleado = (int)dgvEmpleados.CurrentRow.Cells["Numero"].Value;
+                MessageBox.Show($"Modificando empleado: {numeroEmpleado}", "Modificar", 
+                              MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un empleado para modificar", "Advertencia", 
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnEliminar_Click(object sender, EventArgs e)
+        {
+            if (dgvEmpleados.CurrentRow != null)
+            {
+                DialogResult resultado = MessageBox.Show("¿Está seguro de eliminar este empleado?", 
+                                                       "Confirmar Eliminación", 
+                                                       MessageBoxButtons.YesNo, 
+                                                       MessageBoxIcon.Question);
+                
+                if (resultado == DialogResult.Yes)
+                {
+                    tablaEmpleados.Rows.RemoveAt(dgvEmpleados.CurrentRow.Index);
+                    MessageBox.Show("Empleado eliminado correctamente", "Éxito", 
+                                  MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Seleccione un empleado para eliminar", "Advertencia", 
+                              MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnRegresarMenu_Click(object sender, EventArgs e)
+        {
+            frmMenuPrincipal menu = new frmMenuPrincipal();
+            menu.Show();
+            this.Hide();
+        }
+
+        private void btnExportar_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Reporte exportado correctamente", "Éxito", 
+                          MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+    }
+}
