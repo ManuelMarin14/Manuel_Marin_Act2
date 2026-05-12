@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Resultados de datos!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dive2">
+        <h1>Resultados</h1>
+        <img src="imagen.png" alt="Imagen de felicitación" width="200">
+        <h2>¡Bien Hecho!</h2>
+
+        <p><strong>Nombre:</strong> <span id="mostrarNombre"></span></p>
+        <p><strong>Edad:</strong> <span id="mostrarEdad"></span></p>
+        <p><strong>Ciudad:</strong> <span id="mostrarCiudad"></span></p>
+        <p><strong>Pasatiempo:</strong> <span id="mostrarPasatiempo"></span></p>
+
+        <br>
+        <a href="index.html">← Volver al formulario</a>
+    </div>
+
+    <script>
+        // Recuperar datos guardados temporalmente
+        document.getElementById("mostrarNombre").innerText = localStorage.getItem("nombre") || "No especificado";
+        document.getElementById("mostrarEdad").innerText = localStorage.getItem("edad") || "No especificada";
+        document.getElementById("mostrarCiudad").innerText = localStorage.getItem("ciudad") || "No especificada";
+        document.getElementById("mostrarPasatiempo").innerText = localStorage.getItem("pasatiempo") || "No especificado";
+    </script>
+</body>
+</html>
